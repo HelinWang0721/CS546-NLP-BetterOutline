@@ -1,5 +1,6 @@
 import random
 import numpy as np
+from typing import TypedDict, List
 
 def sample_general_one(g) -> str:
     ret = g["fixed_words"]
@@ -24,3 +25,17 @@ def sample_general(general_list) -> str:
         weights = weights / np.sum(weights)
         general_weights = weights
     return sample_general_one(np.random.choice(general_list, p=general_weights))
+
+
+def sample_optional(num, optional_words) -> str:
+    # List[OptionalWords]
+    weights = [1 if "weight" not in o else o["weight"] for o in optional_words]
+    weights = np.array(weights)
+    weights = weights / np.sum(weights)
+    chosen_optional = []
+    while len(chosen_optional) < num:
+        chosen_optional_list = np.random.choice(optional_words, p=weights)
+        chosen_word = chosen_optional_list["words"][np.random.randint(len(chosen_optional_list["words"]))]
+        if chosen_word not in chosen_optional:
+            chosen_optional.append(chosen_word)
+    return " ".join(chosen_optional)

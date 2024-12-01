@@ -8,11 +8,11 @@ with open("./key-openai.yaml", 'r') as f:
     api_keys = yaml.safe_load(f)
 
 MODEL_CONFIGS = [
-    {"model": "openai/gpt-4o", "temperature": 0.5, "max_tokens": 15000},
+    #{"model": "openai/gpt-4o", "temperature": 0.5, "max_tokens": 15000},
     {"model": "anthropic/claude-3.5-sonnet", "temperature": 0.5, "max_tokens": 15000},
     {"model": "deepseek/deepseek-chat", "temperature": 0.5, "max_tokens": 15000},
     {"model": "qwen/qwen-2.5-72b-instruct", "temperature": 0.5, "max_tokens": 15000},
-    {"model": "01-ai/yi-large", "temperature": 0.5, "max_tokens": 15000},
+    {"model": "x-ai/grok-beta", "temperature": 0.5, "max_tokens": 15000},
 ]
 
 with open("./vote-sys-inst.md", 'r', encoding='utf-8') as f:
@@ -76,10 +76,11 @@ def parse_score(response) -> Optional[List[float]]:
     return ret
 
 
-def vote_one_model_openai(outline: str, model_config) -> Dict[str, Tuple[List[float], str]]:
+def vote_one_model_openai(outline: str, model_config=None) -> Dict[str, Tuple[List[float], str]]:
     global client 
     client = OpenAI(api_key=api_keys["key"], base_url="https://api.openai.com/v1")
-    
+
+    model_config = {"model": "gpt-4o", "temperature": 0.5, "max_tokens": 15000}
     MAX_RETRY = 3
     messages = [
         {"role": "system", "content": VOTE_SYS_INST},

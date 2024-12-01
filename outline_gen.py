@@ -21,9 +21,9 @@ def get_rand_n(min_n, max_n, percentage): # get a random number from normal dist
     return int(n)
 
 
-RANGE_CHARACTERS = [3, 10] # inclusive
-RANGE_SCENES = [6, 16]
-RANGE_EVENTS = [10, 27]
+RANGE_CHARACTERS = [3, 6] # inclusive
+RANGE_SCENES = [4, 10]
+RANGE_EVENTS = [8, 18]
 def get_prompt(mandatory_words: str, optional_words: str):
     rand_percentage = np.random.rand() # uniform distribution
     n_characters = get_rand_n(RANGE_CHARACTERS[0], RANGE_CHARACTERS[1], rand_percentage) 
@@ -63,7 +63,7 @@ def chat(**kwargs):
 
 
 def check_outline_completeness(outline):
-    title_list = ["## 故事关键词", "## 故事氛围", "## 故事背景", 
+    title_list = ["## 故事氛围", "## 故事背景", 
                   "## 人设", "## 场景", "## 目的", "## 高潮和结局", 
                   "## 事件大纲"]
     for title in title_list:
@@ -85,10 +85,10 @@ def generate_outline(mandatory_words: str, optional_words: str):
     response_list = []
     while try_count < 3:
         response = chat(
-            model="gpt-4o", 
-            messages=messages,
-            temperature=0.75,
-            max_tokens=8000
+            model="o1-preview", 
+            messages=messages
+            # temperature=0.75,
+            # max_completion_tokens=8000
         )
         if check_outline_completeness(response):
             messages.append({"role": "assistant", "content": response})
@@ -108,8 +108,9 @@ def generate_outline(mandatory_words: str, optional_words: str):
         model="gpt-4o", 
         messages=messages,
         temperature=0.75,
-        max_tokens=15000
+        # max_tokens=15000
     )
     messages.append({"role": "assistant", "content": response})
     response_list.append(response)
-    return messages, response_list
+    
+    return prompt, messages, response_list

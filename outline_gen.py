@@ -114,3 +114,79 @@ def generate_outline(mandatory_words: str, optional_words: str):
     response_list.append(response)
     
     return prompt, messages, response_list
+
+
+def generate_BS_outline(mandatory_words: str, optional_words: str):
+    prompt = get_prompt(mandatory_words, optional_words)
+    messages = [
+        {"role": "user", "content": prompt[0]}
+    ]
+    try_count = 0
+    response_list = []
+    while try_count < 3:
+        response = chat(
+            model="gpt-4o-2024-08-06", 
+            messages=messages
+            # temperature=0.75,
+            # max_completion_tokens=8000
+        )
+        if check_outline_completeness(response):
+            messages.append({"role": "assistant", "content": response})
+            response_list.append(response)
+            break
+        if try_count == 2:
+            print(f"Failed to generate outline")
+            print(f"mandatory words: {mandatory_words}")
+            print(f"optional words: {optional_words}")
+            print("response:")
+            print(response)
+            raise Exception("Failed to generate outline")
+        try_count += 1
+
+    messages.append({"role": "user", "content": prompt[1]})
+    response = chat(
+        model="gpt-4o-2024-08-06", 
+        messages=messages,
+        temperature=0.75,
+        # max_tokens=15000
+    )
+    messages.append({"role": "assistant", "content": response})
+    response_list.append(response)
+    
+    return prompt, messages, response_list
+
+def generate_FT_outline(prompt):
+    messages = [
+        {"role": "user", "content": prompt[0]}
+    ]
+    try_count = 0
+    response_list = []
+    while try_count < 3:
+        response = chat(
+            model="ft:gpt-4o-2024-08-06:personal:better-outline:AeGKBUTq", 
+            messages=messages
+            # temperature=0.75,
+            # max_completion_tokens=8000
+        )
+        if check_outline_completeness(response):
+            messages.append({"role": "assistant", "content": response})
+            response_list.append(response)
+            break
+        if try_count == 2:
+            print(f"Failed to generate outline")
+            print("response:")
+            print(response)
+            raise Exception("Failed to generate outline")
+        try_count += 1
+
+    messages.append({"role": "user", "content": prompt[1]})
+    response = chat(
+        model="ft:gpt-4o-2024-08-06:personal:better-outline:AeGKBUTq", 
+        messages=messages,
+        temperature=0.75,
+        # max_tokens=15000
+    )
+    messages.append({"role": "assistant", "content": response})
+    response_list.append(response)
+    
+    return prompt, messages, response_list
